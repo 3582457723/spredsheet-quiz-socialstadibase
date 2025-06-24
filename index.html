@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>社会科クイズ</title>
+ <style>
+   body {
+     font-family: 'Segoe UI', sans-serif;
+     background: #fff7e0;
+     margin: 0;
+     text-align: center;
+     overflow-x: hidden;
+   }
+
+
+   .screen { display: none; }
+   .fade { animation: fadein 1s ease; }
+   @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+
+   #popup, #titleScreen, #game, #result, #ranking {
+     padding: 30px;
+   }
+
+
+   button {
+     font-size: 1.2em;
+     padding: 10px 20px;
+     border: none;
+     background: #ffc526;
+     color: white;
+     border-radius: 10px;
+     transition: all 0.4s ease;
+     cursor: pointer;
+   }
+
+
+   button:hover {
+     animation: buttonhover 0.4s;
+     background: #ffdf87;
+     font-size: 1.3em;
+     padding: 13px 23px;
+     border: none;
+     border-radius: 13px;
+     cursor: pointer;
+   }
+
+
+   button:hover:disabled {
+     animation: unbuttonhover 0.4s
+     font-size: 1.2em;
+     padding: 10px 20px;
+     border: none;
+     background: #ffc526;
+     color: white;
+     border-radius: 10px;
+     cursor: pointer;
+   }
+
+
+   input[type="text"] {
+     font-size: 1.2em;
+     padding: 5px;
+     border-radius: 5px;
+   }
+
+
+   #timerBar {
+     width: 100%;
+     height: 20px;
+     background: #eee;
+     margin-top: 20px;
+     border-radius: 10px;
+     overflow: hidden;
+   }
+
+
+   #timerFill {
+     height: 100%;
+     background: #00acc1;
+     width: 100%;
+     transition: width 1s linear;
+   }
+
+
+   .score-bar {
+     font-size: 1.1em;
+     margin-bottom: 15px;
+   }
+
+
+   #qCard {
+     background: white;
+     padding: 20px;
+     margin: 20px auto;
+     width: 80%;
+     max-width: 600px;
+     border-radius: 20px;
+     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+     transition: transform 0.3s ease;
+   }
+
+
+   .correct-anim {
+     animation: correctFlash 0.4s;
+   }
+
+
+   .wrong-anim {
+     animation: wrongFlash 0.4s;
+   }
+
+
+   @keyframes correctFlash {
+     0% { background-color: #ffffff; }
+     50% { background-color: #a5d6a7; }
+     100% { background-color: #ffffff; }
+   }
+
+
+   @keyframes wrongFlash {
+     0% { background-color: #ffffff; }
+     50% { background-color: #ef9a9a; }
+     100% { background-color: #ffffff; }
+   }
+
+
+   @keyframes buttonhover {
+     0% { font-size: 1.2em;
+          padding: 10px 20px;
+          border: none;
+          background: #ffc526;
+          color: white;
+          border-radius: 10px;}
+
+
+     100%{background: #ffdf87;
+          font-size: 1.3em;
+          padding: 13px 23px;
+          border: none;
+          border-radius: 13px;
+          cursor: pointer;}
+   }
+
+
+   @keyframes unbuttonhover {
+          0%{background: #ffdf87;
+          font-size: 1.3em;
+          padding: 13px 23px;
+          border: none;
+          border-radius: 13px;
+          cursor: pointer;}
+         
+          100% { font-size: 1.2em;
+          padding: 10px 20px;
+          border: none;
+          background: #ffc526;
+          color: white;
+          border-radius: 10px;}
+
+
+    
+   }
+   .version-text {
+     font-family:'arial black';
+     font-weight:bold;
+   }
+ </style>
+</head>
+<body>
+  <!-- ⚠️ 初回注意ポップアップ -->
+  <div id="popup" class="screen fade">
+    <h2>⚠️ 注意</h2>
+    <p>
+      このクイズは学習目的で提供されます。各問題は60秒以内に答えてください。<br>
+      ランキング機能があります。個人情報につながる名前の入力は避けてください。<br>
+      トラブルがあった場合は通報によりランキングから削除しますが、その他の責任は負いかねます。<br>
+      本製品にはアルマジロ・プログラム・ライセンス(APL)が適用されます。詳細は理科のクイズゲーム公式サイトをご覧ください。<br>
+      このサイトではローカルストレージ / Cookie を使用しています。<br>
+      <br>
+      これは開発中バージョンのスナップショットです。第三者への配布・再配布は禁止します。<br>
+      copyright&nbsp;2025&nbsp;太平洋国連邦ボール ／ けもラボ(ケモノラボラトリーズ研究会)
+    </p>
+    <button onclick="closePopup()">同意して閉じる</button>
+  </div>
+
+  <!-- 🎌 タイトル画面 -->
+  <div id="titleScreen" class="screen fade">
+    <h1>社会クイズ</h1>
+    <span id="highScoreView">ハイスコア：</span><p>
+    <button onclick="startGame()">スタート</button><p>
+    <p class="version-text">バージョン: 2.0.3.383&nbsp;inDev‑a238ws58f</p>
+  </div>
+
+  <!-- 📝 クイズ画面 -->
+  <div id="game" class="screen">
+    <div class="score-bar">
+      スコア：<span id="liveScore">0</span>
+      &nbsp;&nbsp;ミス残り：<span id="lives">3</span>&nbsp;回
+    </div>
+
+    <div id="qCard">
+      <h2 id="qText">問題が表示されます</h2>
+      <input type="text" id="answerInput" placeholder="回答を入力" autocomplete="off" />
+    </div>
+
+    <div id="timerBar"><div id="timerFill"></div></div>
+  </div>
+
+  <!-- 🏁 結果画面 -->
+  <div id="result" class="screen fade">
+    <h2>ゲーム終了！</h2>
+    <p>あなたのスコア: <span id="score">0</span></p>
+    <span id="highScoreViewR">ハイスコア：</span><p>
+    <input type="text" id="nameInput" placeholder="名前を入力" />
+    <button onclick="submitRanking()">ランキングに登録</button>
+    <button onclick="goBackHome()">ホームに戻る</button>
+
+    <h3>バグ報告や新要素の提案をお待ちしています</h3>
+    <button onclick="openFeedback()">フィードバックを送信</button>
+
+    <h2>ランキング</h2>
+    <label for="rankingType">表示タイプ：</label>
+    <select id="rankingType">
+      <option value="normal">通常ランキング</option>
+      <option value="season">シーズンランキング</option>
+      <option value="weekly">週替わりランキング</option>
+      <option value="daily">日替わりランキング</option>
+    </select>
+
+    <div id="rankingSection">
+      <ul id="rankingList"></ul>
+    </div>
+  </div>
+  <!-- ============================
+       クライアントサイド JavaScript
+       ============================ -->
+  <script>
+    /* ---------- グローバル変数 ---------- */
+    const POPUP_KEY = 'popupShown';
+    let questions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let lives = 3;
+    let timeLeft = 60;
+    let timerId = null;
+    let gameStarted = false;
+    let highScore = localStorage.getItem('highScore') || 0;
+
+    /* ---------- 初期化 ---------- */
+    window.onload = () => {
+      document.getElementById('highScoreView').innerText  = `ハイスコア：${highScore}`;
+      document.getElementById('titleScreen').style.display = 'none';
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('result').style.display = 'none';
+      if (true) {
+        document.getElementById('popup').style.display = 'block';
+      } else {
+        document.getElementById('titleScreen').style.display = 'block';
+      }
+    };
+
+    /* ESC で強制終了 */
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && gameStarted) endGame();
+    });
+
+    /* ---------- ポップアップ処理 ---------- */
+    function closePopup() {
+      localStorage.setItem(POPUP_KEY, 'true');
+      document.getElementById('popup').style.display = 'none';
+      document.getElementById('titleScreen').style.display = 'block';
+    }
+
+    /* ---------- ゲーム開始 ---------- */
+    function startGame() {
+  console.log('startGame() 開始');
+
+  score = 0;
+  lives = 3;
+  currentIndex = 0;
+  gameStarted = true;
+
+  document.getElementById('titleScreen').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  document.getElementById('liveScore').innerText = score;
+  document.getElementById('lives').innerText = lives;
+
+  google.script.run.withSuccessHandler(data => {
+    console.log('getRandomQuestions 成功:', data);
+    
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      alert('問題が取得できませんでした。');
+      return;
+    }
+
+    questions = data;
+    showQuestion(); // ✅ ここで初めてゲームが進行
+  }).getRandomQuestions();
+}
+
+
+    /* ---------- 問題表示 ---------- */
+    function showQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById('qText').innerText = q.question;
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').focus();
+
+      timeLeft = 60;
+      updateTimerBar();
+      clearInterval(timerId);
+      timerId = setInterval(() => {
+        timeLeft--;
+        updateTimerBar();
+        if (timeLeft <= 0) {
+          clearInterval(timerId);
+          wrongAnswer();
+        }
+      }, 1000);
+    }
+
+    /* ---------- タイマーバー更新 ---------- */
+    function updateTimerBar() {
+      document.getElementById('timerFill').style.width = (timeLeft / 60) * 100 + '%';
+    }
+
+    /* ---------- 回答チェック ---------- */
+    document.getElementById('answerInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkAnswer();
+    });
+
+    function checkAnswer() {
+  if (!questions[currentIndex]) return endGame();
+
+  const userAnswer = document.getElementById('answerInput').value.trim();
+  const correctAnswer = questions[currentIndex].answer.toString().trim();
+
+  if (userAnswer === correctAnswer) {
+    correctAnswerFunc(); // 正解時の処理
+  } else {
+    wrongAnswer(); // 間違い処理
+  }
+}
+
+
+    /* ---------- 正解 / 不正解 ---------- */
+    function correctAnswerFunc() {
+  clearInterval(timerId);
+  score += 100;
+  document.getElementById('liveScore').innerText = score;
+
+  const gameEl = document.getElementById('game');
+  gameEl.classList.remove('wrong-anim');
+  gameEl.classList.add('correct-anim');
+
+  setTimeout(() => {
+    gameEl.classList.remove('correct-anim');
+    currentIndex++;
+      showQuestion();
+  }, 400);
+}
+
+
+    function wrongAnswer() {
+      clearInterval(timerId);
+      lives--;
+      document.getElementById('lives').innerText = lives;
+
+      const qCard = document.getElementById('qCard');
+      const ansP  = document.createElement('p');
+      ansP.id = 'answerDisplay';
+      ansP.innerText = `正解：${questions[currentIndex].answer}`;
+      ansP.style.cssText = 'color:#d32f2f;font-size:1.2em;animation:fadein 0.8s;';
+      qCard.appendChild(ansP);
+
+      document.getElementById('game').classList.add('wrong-anim');
+      setTimeout(() => {
+        document.getElementById('game').classList.remove('wrong-anim');
+        ansP.remove();
+        (lives <= 0) ? endGame() : (currentIndex++, showQuestion());
+      }, 1500);
+    }
+
+    /* ---------- ゲーム終了 ---------- */
+    function endGame() {
+      clearInterval(timerId);
+      gameStarted = false;
+
+      document.getElementById('game').style.display   = 'none';
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('score').innerText      = score;
+
+      // ハイスコア更新
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+        document.getElementById('highScoreViewR').innerText = `ハイスコア：${highScore}　ハイスコア更新!!`;
+        document.getElementById('highScoreView').innerText  = `ハイスコア：${highScore}`;
+      } else {
+        document.getElementById('highScoreViewR').innerText = `ハイスコア：${highScore}`;
+      }
+
+      // 通常ランキング取得
+      google.script.run.withSuccessHandler(showRanking).getRankingBySheet('ランキング');
+    }
+
+    /* ---------- ランキング登録 ---------- */
+    function submitRanking() {
+      const name = document.getElementById('nameInput').value.trim();
+      if (!name) return alert('名前を入力してください。');
+
+      google.script.run.withSuccessHandler(() => {
+        alert('ランキングに登録しました！');
+        google.script.run.withSuccessHandler(showRanking).getRankingBySheet('ランキング');
+      }).submitScore({ name, score });
+    }
+
+    /* ---------- ランキング表示 ---------- */
+    document.getElementById('rankingType').addEventListener('change', e => {
+      const sheetName = getSheetLabel(e.target.value);
+      google.script.run.withSuccessHandler(showRanking).getRankingBySheet(sheetName);
+    });
+
+    function getSheetLabel(type) {
+      const now   = new Date();
+      const y     = now.getFullYear();
+      const m     = String(now.getMonth() + 1).padStart(2, '0');
+      const d     = String(now.getDate()).padStart(2, '0');
+      const week  = Math.ceil((now.getDate() - 1 + new Date(y, now.getMonth(), 1).getDay()) / 7);
+
+      if (type === 'season') return `Season_${y}_${m}`;
+      if (type === 'weekly') return `Week_${y}_W${week}`;
+      if (type === 'daily')  return `Day_${y}_${m}_${d}`;
+      return 'ランキング';
+    }
+
+    function showRanking(rows) {
+      const ul = document.getElementById('rankingList');
+      ul.innerHTML = '';
+      rows.sort((a, b) => b[1] - a[1]);           // スコア降順
+      rows.slice(0, 30).forEach(r => {            // 上位30件
+        const li = document.createElement('li');
+        li.textContent = `${r[0]}：${r[1]}点 (${new Date(r[2]).toLocaleDateString()})`;
+        ul.appendChild(li);
+      });
+    }
+
+    /* ---------- その他の UI 操作 ---------- */
+    function goBackHome() {
+      document.getElementById('result').style.display      = 'none';
+      document.getElementById('titleScreen').style.display = 'block';
+    }
+
+    function openFeedback() {
+      window.open('https://example.com/feedback', '_blank');
+    }
+  </script>
+</body>
+</html>
