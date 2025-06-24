@@ -1,28 +1,29 @@
-BSD 3-Clause License
+アルマジロ・Gas プログラム・ライセンス (APL)
 
-Copyright (c) 2025, 太平洋国連邦ボール
+1. 定義
+本ライセンスにおいて、「ソフトウェア」とは、本ライセンスを主張しているプログラムおよびその派生作品を指します。
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+2. 許可される行為
+本ライセンスの下で、以下の行為が許可されます。
+ソフトウェアの使用
+ソフトウェアの改変および派生作品の作成
+ソフトウェアの複製および再配布
+教育目的での利用
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
+3. 制限事項
+以下の行為は禁止されます。
+商業目的での使用（販売、広告収益の獲得など）（ただし、オリジナルの制作者には例外が適用されます）
+本ライセンスの削除または改変
+ソフトウェアの著作権を偽る行為
+違法行為を助長する目的での使用
 
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+4. 免責事項
+本ソフトウェアは「現状のまま」提供され、いかなる保証もありません。開発者は、本ソフトウェアの使用によって生じた損害について、一切の責任を負いません。
 
-3. Neither the name of the copyright holder nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
+5. クレジット表示
+ソフトウェアを改変・再配布する場合、元の開発者のクレジットを適切に明示する必要があります。
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+6. ライセンスの変更
+本ライセンスは、作者の判断により改訂される場合があります。
+
+Copyright (C) 内部法人 | Poland OS開発団体© 2025
